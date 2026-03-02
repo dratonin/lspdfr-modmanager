@@ -1,0 +1,118 @@
+<Page x:Class="LSPDFRModManager.Views.SettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Settings"
+      Background="Transparent">
+
+    <Page.Resources>
+        <Storyboard x:Key="FadeIn">
+            <DoubleAnimation Storyboard.TargetName="RootPanel"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" Duration="0:0:0.3" />
+        </Storyboard>
+    </Page.Resources>
+
+    <Page.Triggers>
+        <EventTrigger RoutedEvent="Page.Loaded">
+            <BeginStoryboard Storyboard="{StaticResource FadeIn}" />
+        </EventTrigger>
+    </Page.Triggers>
+
+    <Grid x:Name="RootPanel" Opacity="0" Margin="24,8,24,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- ===============================================
+             HEADER with back button
+             =============================================== -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,8,0,20">
+            <Button Content="&#x2190; Back"
+                    Style="{StaticResource OutlinedButton}"
+                    Command="{Binding BackCommand}"
+                    VerticalAlignment="Center"
+                    Margin="0,0,16,0" />
+            <TextBlock Text="Settings"
+                       FontSize="22" FontWeight="Bold"
+                       Foreground="White"
+                       VerticalAlignment="Center" />
+        </StackPanel>
+
+        <!-- ===============================================
+             SETTINGS CONTENT
+             =============================================== -->
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel MaxWidth="700" HorizontalAlignment="Left">
+
+                <!-- GTA V Directory -->
+                <Border Background="{StaticResource CardBrush}"
+                        CornerRadius="12" Padding="24" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="GTA V DIRECTORY"
+                                   FontSize="13" FontWeight="Bold"
+                                   Foreground="{StaticResource AccentBrush}"
+                                   Margin="0,0,0,6" />
+                        <TextBlock Text="Set the path to your Grand Theft Auto V installation folder."
+                                   FontSize="12"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   Margin="0,0,0,14" />
+
+                        <!-- Path input row -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox Grid.Column="0"
+                                     Text="{Binding GtaFolderPath, UpdateSourceTrigger=PropertyChanged}"
+                                     FontSize="13"
+                                     VerticalContentAlignment="Center" />
+
+                            <Button Grid.Column="1"
+                                    Content="Browse"
+                                    Style="{StaticResource InputButton}"
+                                    Command="{Binding BrowseCommand}"
+                                    Margin="8,0,0,0" />
+                        </Grid>
+
+                        <!-- Validation message -->
+                        <TextBlock Text="{Binding ValidationMessage}"
+                                   FontSize="12"
+                                   Margin="0,8,0,0">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsFolderValid}" Value="True">
+                                            <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!-- Save button -->
+                <Button Content="Save"
+                        Command="{Binding SaveCommand}"
+                        HorizontalAlignment="Left"
+                        Width="140">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsFolderValid}" Value="False">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

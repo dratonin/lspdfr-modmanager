@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="LSPDFR Mod Manager"
-        Width="780" Height="580"
+        Width="1100" Height="720"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         AllowsTransparency="True"
@@ -29,23 +29,23 @@
                 <!-- Topographic contour line overlay (~8% opacity) -->
                 <Canvas IsHitTestVisible="False" Opacity="0.08">
                     <Path Stroke="White" StrokeThickness="0.8"
-                          Data="M 0,140 Q 190,100 380,140 Q 570,180 760,140" />
+                          Data="M 0,140 Q 270,100 540,140 Q 810,180 1080,140" />
                     <Path Stroke="White" StrokeThickness="0.7"
-                          Data="M 0,165 Q 210,128 380,165 Q 550,202 760,165" />
+                          Data="M 0,165 Q 300,128 540,165 Q 780,202 1080,165" />
                     <Path Stroke="White" StrokeThickness="0.6"
-                          Data="M 0,190 Q 230,158 380,190 Q 530,222 760,190" />
+                          Data="M 0,190 Q 330,158 540,190 Q 750,222 1080,190" />
                     <Path Stroke="White" StrokeThickness="0.7"
-                          Data="M 0,280 Q 170,248 380,280 Q 590,312 760,280" />
+                          Data="M 0,320 Q 250,288 540,320 Q 830,352 1080,320" />
                     <Path Stroke="White" StrokeThickness="0.6"
-                          Data="M 0,305 Q 200,275 380,305 Q 560,335 760,305" />
+                          Data="M 0,345 Q 280,315 540,345 Q 800,375 1080,345" />
                     <Path Stroke="White" StrokeThickness="0.5"
-                          Data="M 0,330 Q 230,303 380,330 Q 530,357 760,330" />
+                          Data="M 0,370 Q 330,343 540,370 Q 750,397 1080,370" />
                     <Path Stroke="White" StrokeThickness="0.6"
-                          Data="M 0,400 Q 180,372 380,400 Q 580,428 760,400" />
+                          Data="M 0,460 Q 260,432 540,460 Q 820,488 1080,460" />
                     <Path Stroke="White" StrokeThickness="0.5"
-                          Data="M 0,425 Q 210,400 380,425 Q 550,450 760,425" />
+                          Data="M 0,485 Q 300,460 540,485 Q 780,510 1080,485" />
                     <Path Stroke="White" StrokeThickness="0.5"
-                          Data="M 0,455 Q 240,433 380,455 Q 520,477 760,455" />
+                          Data="M 0,515 Q 340,493 540,515 Q 740,537 1080,515" />
                 </Canvas>
 
                 <!-- Close button (top-right corner of the card) -->

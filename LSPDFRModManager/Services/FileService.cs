@@ -1,48 +1,72 @@
 using System.IO;
 using System.IO.Compression;
 using LSPDFRModManager.Helpers;
+using SharpCompress.Archives;
 
 namespace LSPDFRModManager.Services;
 
 /// <summary>
 /// Handles file-system operations related to mod installation.
-/// Extracted from the old MainViewModel so multiple pages can reuse it.
+/// Supports both ZIP and RAR archive formats.
 /// </summary>
 public sealed class FileService
 {
+    private static readonly string[] ZipExtensions = [".zip"];
+    private static readonly string[] RarExtensions = [".rar"];
+
     /// <summary>
-    /// Validates and installs a mod from a .zip archive into the GTA V folder.
+    /// Validates and installs a mod from a .zip or .rar archive into the GTA V folder.
     /// Returns <c>true</c> on success, <c>false</c> on failure.
     /// Progress and error messages are reported through <paramref name="progress"/>.
     /// </summary>
     public async Task<bool> InstallModAsync(
-        string zipPath, string gtaFolderPath, IProgress<string> progress)
+        string archivePath, string gtaFolderPath, IProgress<string> progress)
     {
         try
         {
+            string ext = Path.GetExtension(archivePath).ToLowerInvariant();
+
             // Step 1 — Validate the archive
-            progress.Report("Validating archive…");
-            bool valid = await Task.Run(() => ValidateZip(zipPath));
-            if (!valid)
+            progress.Report("Validating archive\u2026");
+
+            if (ZipExtensions.Contains(ext))
             {
-                progress.Report("Error: Invalid or empty ZIP archive.");
+                bool valid = await Task.Run(() => ValidateZip(archivePath));
+                if (!valid)
+                {
+                    progress.Report("Error: Invalid or empty ZIP archive.");
+                    return false;
+                }
+            }
+            else if (RarExtensions.Contains(ext))
+            {
+                bool valid = await Task.Run(() => ValidateRar(archivePath));
+                if (!valid)
+                {
+                    progress.Report("Error: Invalid or empty RAR archive.");
+                    return false;
+                }
+            }
+            else
+            {
+                progress.Report("Error: Unsupported archive format. Use .zip or .rar.");
                 return false;
             }
 
             // Step 2 — Extract and copy into GTA V folder
-            await ExtractAndCopyModAsync(zipPath, gtaFolderPath, progress);
+            await ExtractAndCopyModAsync(archivePath, gtaFolderPath, progress);
             return true;
         }
         catch (InvalidDataException)
         {
-            progress.Report("Error: Not a valid ZIP file.");
-            Logger.Log($"Invalid ZIP file: {zipPath}");
+            progress.Report("Error: Not a valid archive file.");
+            Logger.Log($"Invalid archive file: {archivePath}");
             return false;
         }
         catch (Exception ex)
         {
             progress.Report($"Error: {ex.Message}");
-            Logger.Log($"Mod install failed for {zipPath}: {ex}");
+            Logger.Log($"Mod install failed for {archivePath}: {ex}");
             return false;
         }
     }
@@ -57,25 +81,46 @@ public sealed class FileService
             using var archive = ZipFile.OpenRead(zipPath);
             if (archive.Entries.Count == 0)
             {
-                Logger.Log($"ZIP validation failed: archive is empty — {zipPath}");
+                Logger.Log($"ZIP validation failed: archive is empty \u2014 {zipPath}");
                 return false;
             }
             return true;
         }
         catch (InvalidDataException)
         {
-            Logger.Log($"ZIP validation failed: corrupt archive — {zipPath}");
+            Logger.Log($"ZIP validation failed: corrupt archive \u2014 {zipPath}");
             return false;
         }
     }
 
     /// <summary>
-    /// Extracts a .zip mod archive to a temporary folder, then copies
+    /// Checks that a RAR file is readable and contains at least one entry.
+    /// </summary>
+    private static bool ValidateRar(string rarPath)
+    {
+        try
+        {
+            using var archive = ArchiveFactory.OpenArchive(rarPath);
+            if (!archive.Entries.Any(e => !e.IsDirectory))
+            {
+                Logger.Log($"RAR validation failed: archive is empty \u2014 {rarPath}");
+                return false;
+            }
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Logger.Log($"RAR validation failed: {ex.Message} \u2014 {rarPath}");
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Extracts a mod archive (.zip or .rar) to a temporary folder, then copies
     /// all files into the GTA V directory (preserving subdirectories).
-    /// Reports progress messages through <paramref name="progress"/>.
     /// </summary>
     public async Task ExtractAndCopyModAsync(
-        string zipPath, string gtaFolderPath, IProgress<string> progress)
+        string archivePath, string gtaFolderPath, IProgress<string> progress)
     {
         string tempDir = Path.Combine(
             Path.GetTempPath(),
@@ -83,18 +128,26 @@ public sealed class FileService
 
         try
         {
-            progress.Report("Extracting mod archive…");
-            await Task.Run(() => ZipFile.ExtractToDirectory(zipPath, tempDir));
+            progress.Report("Extracting mod archive\u2026");
 
-            progress.Report("Copying files to GTA V folder…");
+            string ext = Path.GetExtension(archivePath).ToLowerInvariant();
+            if (ZipExtensions.Contains(ext))
+            {
+                await Task.Run(() => ZipFile.ExtractToDirectory(archivePath, tempDir));
+            }
+            else
+            {
+                await Task.Run(() => ExtractWithSharpCompress(archivePath, tempDir));
+            }
+
+            progress.Report("Copying files to GTA V folder\u2026");
             await Task.Run(() => CopyDirectory(tempDir, gtaFolderPath));
 
-            progress.Report("Mod installed successfully! ✅");
-            Logger.Log($"Mod installed from {zipPath}.");
+            progress.Report("Mod installed successfully! \u2705");
+            Logger.Log($"Mod installed from {archivePath}.");
         }
         finally
         {
-            // Clean up the temp folder (best-effort).
             try
             {
                 if (Directory.Exists(tempDir))
@@ -104,6 +157,18 @@ public sealed class FileService
             {
                 // Not critical — the OS will clean temp eventually.
             }
+        }
+    }
+
+    /// <summary>
+    /// Extracts an archive using SharpCompress (supports RAR, 7z, tar, etc.).
+    /// </summary>
+    private static void ExtractWithSharpCompress(string archivePath, string destDir)
+    {
+        using var archive = ArchiveFactory.OpenArchive(archivePath);
+        foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
+        {
+            entry.WriteToDirectory(destDir);
         }
     }
 
