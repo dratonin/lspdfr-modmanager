@@ -1,0 +1,147 @@
+<Page x:Class="LSPDFRModManager.Views.OnboardingPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Welcome"
+      Background="Transparent">
+
+    <!-- ═══════════════════════════════════════════════════════════
+         FADE-IN ANIMATION (300 ms)
+         ═══════════════════════════════════════════════════════════ -->
+    <Page.Resources>
+        <Storyboard x:Key="FadeIn">
+            <DoubleAnimation Storyboard.TargetName="RootPanel"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" Duration="0:0:0.3" />
+        </Storyboard>
+    </Page.Resources>
+
+    <Page.Triggers>
+        <EventTrigger RoutedEvent="Page.Loaded">
+            <BeginStoryboard Storyboard="{StaticResource FadeIn}" />
+        </EventTrigger>
+    </Page.Triggers>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         CONTENT — window IS the card, content centered
+         ═══════════════════════════════════════════════════════════ -->
+    <Grid x:Name="RootPanel" Opacity="0">
+        <StackPanel VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Width="340">
+
+            <!-- ─── V LOGO (Roman numeral emblem) ─── -->
+            <TextBlock Text="V"
+                       FontSize="80" FontWeight="Bold"
+                       FontFamily="Georgia"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,12" />
+
+            <!-- ─── TITLE ─── -->
+            <TextBlock Text="Gib den Spielpfad an"
+                       FontSize="22" FontWeight="Bold"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,8" />
+
+            <!-- ─── SUBTITLE ─── -->
+            <TextBlock Text="Wähle den Stammordner von GTA 5 aus, in den Mods installiert werden"
+                       FontSize="13"
+                       Foreground="#A0A0BB"
+                       TextWrapping="Wrap"
+                       TextAlignment="Center"
+                       HorizontalAlignment="Center"
+                       MaxWidth="320"
+                       Margin="0,0,0,28" />
+
+            <!-- ═══════════════════════════════════════════
+                 FOLDER INPUT — clickable rounded field
+                 Opens folder dialog on click.
+                 Soft blue glow on hover.
+                 ═══════════════════════════════════════════ -->
+            <Border CornerRadius="12" Cursor="Hand">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="#252740" />
+                        <Setter Property="BorderBrush" Value="Transparent" />
+                        <Setter Property="BorderThickness" Value="1.5" />
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="#5B8CFF" />
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#5B8CFF"
+                                                          BlurRadius="12"
+                                                          ShadowDepth="0"
+                                                          Opacity="0.6" />
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <Border.InputBindings>
+                    <MouseBinding MouseAction="LeftClick"
+                                  Command="{Binding SelectFolderCommand}" />
+                </Border.InputBindings>
+
+                <!-- Path display (or placeholder when empty) -->
+                <TextBlock VerticalAlignment="Center"
+                           Margin="12,10"
+                           FontSize="13"
+                           TextTrimming="CharacterEllipsis">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Text"
+                                    Value="{Binding GtaFolderPath}" />
+                            <Setter Property="Foreground" Value="#D0D0E0" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding GtaFolderPath}"
+                                             Value="">
+                                    <Setter Property="Text"
+                                            Value="D:\Grand Theft Auto V Legacy" />
+                                    <Setter Property="Foreground"
+                                            Value="{StaticResource TextMutedBrush}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Border>
+
+            <!-- ─── Inline validation message ─── -->
+            <TextBlock Text="{Binding ValidationMessage}"
+                       FontSize="12" Margin="4,8,0,0">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Setter Property="Foreground"
+                                Value="{StaticResource SuccessBrush}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasValidationMessage}"
+                                         Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsFolderValid}"
+                                         Value="False">
+                                <Setter Property="Foreground"
+                                        Value="{StaticResource ErrorBrush}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <!-- ─── Spacer before CTA ─── -->
+            <Rectangle Height="0" Margin="0,24,0,0" />
+
+            <!-- ─── PRIMARY CTA — Weiter (white pill button) ─── -->
+            <Button Content="Weiter"
+                    Command="{Binding ContinueCommand}"
+                    IsEnabled="{Binding IsFolderValid}"
+                    Style="{StaticResource PrimaryButton}"
+                    HorizontalAlignment="Stretch" />
+
+        </StackPanel>
+    </Grid>
+</Page>

@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!-- Exclude the WPF project folder so its files aren't globbed into this test project -->
+  <ItemGroup>
+    <Compile Remove="LSPDFRModManager\**" />
+    <None Remove="LSPDFRModManager\**" />
+    <EmbeddedResource Remove="LSPDFRModManager\**" />
+    <Page Remove="LSPDFRModManager\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MSTest" Version="4.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+  </ItemGroup>
+
+</Project>

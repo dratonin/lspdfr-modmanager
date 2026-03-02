@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="LSPDFRModManager/LSPDFRModManager.csproj" />
+  <Project Path="TestProject1.csproj" />
+</Solution>

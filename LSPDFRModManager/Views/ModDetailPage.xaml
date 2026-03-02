@@ -1,0 +1,167 @@
+<Page x:Class="LSPDFRModManager.Views.ModDetailPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Mod Details"
+      Background="Transparent">
+
+    <Page.Resources>
+        <Storyboard x:Key="FadeIn">
+            <DoubleAnimation Storyboard.TargetName="RootPanel"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" Duration="0:0:0.3" />
+        </Storyboard>
+    </Page.Resources>
+
+    <Page.Triggers>
+        <EventTrigger RoutedEvent="Page.Loaded">
+            <BeginStoryboard Storyboard="{StaticResource FadeIn}" />
+        </EventTrigger>
+    </Page.Triggers>
+
+    <Grid x:Name="RootPanel" Opacity="0" Margin="24,8,24,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- ===============================================
+             HEADER with back button
+             =============================================== -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,8,0,12">
+            <Button Content="← Back"
+                    Style="{StaticResource OutlinedButton}"
+                    Command="{Binding BackCommand}"
+                    VerticalAlignment="Center"
+                    Margin="0,0,16,0" />
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="{Binding Mod.Name}"
+                           FontSize="22" FontWeight="Bold"
+                           Foreground="White" />
+                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                    <Border Background="{StaticResource SurfaceBrush}"
+                            CornerRadius="6" Padding="8,3"
+                            Margin="0,0,8,0">
+                        <TextBlock FontSize="11"
+                                   Foreground="{StaticResource TextSecondaryBrush}">
+                            <Run Text="v" /><Run Text="{Binding Mod.Version, Mode=OneWay}" />
+                        </TextBlock>
+                    </Border>
+                    <Border Background="{StaticResource SurfaceBrush}"
+                            CornerRadius="6" Padding="8,3">
+                        <TextBlock Text="{Binding Mod.Category}"
+                                   FontSize="11"
+                                   Foreground="{StaticResource AccentBrush}" />
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- ===============================================
+             SCROLLABLE CONTENT
+             =============================================== -->
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="0,0,4,0">
+
+                <!-- ─── DESCRIPTION ─── -->
+                <Border Background="{StaticResource CardBrush}"
+                        CornerRadius="12" Padding="20" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="DESCRIPTION"
+                                   FontSize="13" FontWeight="Bold"
+                                   Foreground="{StaticResource AccentBrush}"
+                                   Margin="0,0,0,10" />
+                        <TextBlock Text="{Binding Mod.DetailDescription}"
+                                   FontSize="13" LineHeight="22"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <!-- ─── NOTES ─── -->
+                <Border Background="{StaticResource CardBrush}"
+                        CornerRadius="12" Padding="20" Margin="0,0,0,10">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Mod.Notes}" Value="">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel>
+                        <TextBlock Text="NOTES"
+                                   FontSize="13" FontWeight="Bold"
+                                   Foreground="#FFD166"
+                                   Margin="0,0,0,10" />
+                        <TextBlock Text="{Binding Mod.Notes}"
+                                   FontSize="13" LineHeight="22"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <!-- ─── INSTALLATION ─── -->
+                <Border Background="{StaticResource CardBrush}"
+                        CornerRadius="12" Padding="20" Margin="0,0,0,10">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Mod.InstallationGuide}" Value="">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel>
+                        <TextBlock Text="INSTALLATION"
+                                   FontSize="13" FontWeight="Bold"
+                                   Foreground="{StaticResource InstalledBrush}"
+                                   Margin="0,0,0,10" />
+                        <TextBlock Text="{Binding Mod.InstallationGuide}"
+                                   FontSize="13" LineHeight="22"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <!-- ─── CREDITS ─── -->
+                <Border Background="{StaticResource CardBrush}"
+                        CornerRadius="12" Padding="20" Margin="0,0,0,10">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Mod.Credits}" Value="">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel>
+                        <TextBlock Text="CREDITS"
+                                   FontSize="13" FontWeight="Bold"
+                                   Foreground="#C084FC"
+                                   Margin="0,0,0,10" />
+                        <TextBlock Text="{Binding Mod.Credits}"
+                                   FontSize="13" LineHeight="22"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <!-- ─── ACTION BUTTONS ─── -->
+                <StackPanel Orientation="Horizontal" Margin="0,4,0,12">
+                    <Button Content="🌐 Open Download Page"
+                            Style="{StaticResource OutlinedButton}"
+                            Command="{Binding DownloadCommand}"
+                            Margin="0,0,10,0" />
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>
